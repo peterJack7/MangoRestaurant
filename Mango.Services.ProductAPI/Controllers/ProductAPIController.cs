@@ -1,6 +1,10 @@
 ﻿using Mango.Services.ProductAPI.Models.Dto;
 using Mango.Services.ProductAPI.Repository;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
+using System.Data;
+using System.Net.Mail;
+using System.Net;
 
 namespace Mango.Services.ProductAPI.Controllers
 {
@@ -8,11 +12,13 @@ namespace Mango.Services.ProductAPI.Controllers
     public class ProductAPIController : ControllerBase
     {
         protected ResponseDto _response;
+        private IDALRepository _dalRepository;
         private IProductRepository _productRepository;
 
-        public ProductAPIController(IProductRepository productRepository)
+        public ProductAPIController(IProductRepository productRepository, IDALRepository dALRepository)
         {
             _productRepository = productRepository;
+            _dalRepository= dALRepository;  
             this._response=new ResponseDto();
         }
 
@@ -31,6 +37,29 @@ namespace Mango.Services.ProductAPI.Controllers
             }
             return _response;
         }
+
+        //[HttpGet]
+        //public  string GetSqlProduct()
+        //{
+        //    string response = "";
+        //    try
+        //    {
+              
+        //        //SqlParameter[] parameters = {
+        //        //    new SqlParameter("@user_type_id",SqlDbType.VarChar){Value=""}
+
+        //        //};
+        //        DataSet productDtos =  _dalRepository.getDataSetForSqlParam("SpGetProducts", null);
+
+        //        response = _dalRepository.ConvertDataTableTojSonString(productDtos.Tables[0]);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        //_response.IsSuccess = false;
+        //        //_response.ErrorMessages = new List<string>() { ex.Message.ToString() };
+        //    }
+        //    return response;
+        //}
 
         [HttpGet]
         [Route("{id}")]
