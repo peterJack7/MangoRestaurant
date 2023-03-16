@@ -5,7 +5,7 @@ namespace Mango.Services.ProductAPI.Repository
 {
     public interface IDALRepository
     {
-        DataSet getDataSetForSqlParam(string procedure, SqlParameter[] param = null);
+        public Task<DataSet> getDataSetForSqlParam(string procedure, SqlParameter[] param = null);
         public String ConvertDataTableTojSonString(DataTable dataTable);
     }
 }

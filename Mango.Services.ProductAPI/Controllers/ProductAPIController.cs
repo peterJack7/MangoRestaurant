@@ -12,13 +12,11 @@ namespace Mango.Services.ProductAPI.Controllers
     public class ProductAPIController : ControllerBase
     {
         protected ResponseDto _response;
-        private IDALRepository _dalRepository;
         private IProductRepository _productRepository;
 
-        public ProductAPIController(IProductRepository productRepository, IDALRepository dALRepository)
+        public ProductAPIController(IProductRepository productRepository)
         {
             _productRepository = productRepository;
-            _dalRepository= dALRepository;  
             this._response=new ResponseDto();
         }
 
@@ -37,29 +35,6 @@ namespace Mango.Services.ProductAPI.Controllers
             }
             return _response;
         }
-
-        //[HttpGet]
-        //public  string GetSqlProduct()
-        //{
-        //    string response = "";
-        //    try
-        //    {
-              
-        //        //SqlParameter[] parameters = {
-        //        //    new SqlParameter("@user_type_id",SqlDbType.VarChar){Value=""}
-
-        //        //};
-        //        DataSet productDtos =  _dalRepository.getDataSetForSqlParam("SpGetProducts", null);
-
-        //        response = _dalRepository.ConvertDataTableTojSonString(productDtos.Tables[0]);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        //_response.IsSuccess = false;
-        //        //_response.ErrorMessages = new List<string>() { ex.Message.ToString() };
-        //    }
-        //    return response;
-        //}
 
         [HttpGet]
         [Route("{id}")]

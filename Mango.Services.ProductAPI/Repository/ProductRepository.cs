@@ -4,6 +4,8 @@ using Mango.Services.ProductAPI.Repository;
 using Mango.Services.ProductAPI.DBContexts;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
+using Newtonsoft.Json;
 
 namespace Mango.Services.ProductAPI.Repository
 {
@@ -11,25 +13,26 @@ namespace Mango.Services.ProductAPI.Repository
     {
         private readonly ApplictionDBContext _db;
         private IMapper _mapper;
-
-        public ProductRepository(ApplictionDBContext db, IMapper mapper)
+        private readonly IDALRepository _dal;
+        public ProductRepository(ApplictionDBContext db, IMapper mapper, IDALRepository dal)
         {
             _db = db;
             _mapper = mapper;
+            _dal = dal;
         }
         public async Task<ProductDto> CreateUpdateProduct(ProductDto productDto)
         {
-            Product product= _mapper.Map<ProductDto,Product>(productDto);
+            Product product = _mapper.Map<ProductDto, Product>(productDto);
             if (product.ProductId > 0)
             {
                 _db.Products.Update(product);
             }
             else
             {
-                _db.Products.Add(product);  
+                _db.Products.Add(product);
             }
             await _db.SaveChangesAsync();
-            return _mapper.Map<Product,ProductDto>(product);
+            return _mapper.Map<Product, ProductDto>(product);
         }
 
         public async Task<bool> DeletProduct(int productId)
@@ -61,7 +64,18 @@ namespace Mango.Services.ProductAPI.Repository
 
         public async Task<IEnumerable<ProductDto>> GetProducts()
         {
-            List<Product> productsList = await _db.Products.ToListAsync();
+            string result = "";
+            DataSet ds = await _dal.getDataSetForSqlParam("sp_getproducts", null);
+            if (ds.Tables.Count > 0)
+            {
+                result = _dal.ConvertDataTableTojSonString(ds.Tables[0]);
+            }
+            else
+            {
+                result = "";
+            }
+
+            List<Product> productsList = JsonConvert.DeserializeObject<List<Product>>(result);
             return _mapper.Map<List<ProductDto>>(productsList);
 
         }

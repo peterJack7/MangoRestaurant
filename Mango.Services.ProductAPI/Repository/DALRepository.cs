@@ -7,21 +7,18 @@ namespace Mango.Services.ProductAPI.Repository
 {
     public class DALRepository : IDALRepository
     {
-        public SqlConnection con = new SqlConnection();
+        
         SqlDataReader rdr = null;
         public SqlCommand cmd;
         public SqlDataAdapter adptr;
-        DataTable dr;
-        DataSet ds;
         string strConnection = "";
-
+        public SqlConnection con = new SqlConnection();
         private readonly IConfiguration configuration;
-        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly SqlConnection sqlConnection = new SqlConnection();
 
-        public DALRepository(IConfiguration configuration, IHostingEnvironment hostingEnvironment)
+        public DALRepository(IConfiguration configuration)
         {
             this.configuration = configuration;
-            _hostingEnvironment = hostingEnvironment;
         }
 
 
@@ -33,10 +30,10 @@ namespace Mango.Services.ProductAPI.Repository
 
         public void ConnectionOpen()
         {
-            if (con.State == ConnectionState.Closed)
+            if (sqlConnection.State == ConnectionState.Closed)
             {
-                con.ConnectionString = strConnection;
-                con.Open();
+                sqlConnection.ConnectionString = SqlConnection();
+                sqlConnection.Open();
             }
         }
 
@@ -62,13 +59,13 @@ namespace Mango.Services.ProductAPI.Repository
 
 
 
-        public DataSet getDataSetForSqlParam(string procedure, SqlParameter[] param = null)
+        public async Task<DataSet> getDataSetForSqlParam(string procedure, SqlParameter[] param = null)
         {
             DataSet ds = new DataSet();
             try
             {
                 ConnectionOpen();
-                adptr = new SqlDataAdapter(procedure, con);
+                adptr = new SqlDataAdapter(procedure, sqlConnection);
                 adptr.SelectCommand.CommandTimeout = 0;
                 adptr.SelectCommand.CommandType = CommandType.StoredProcedure;
                 foreach (SqlParameter parm in param)
